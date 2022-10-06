@@ -3,9 +3,9 @@ import sys
 sys.path.append('..')
 import numpy as np
 import matplotlib.pyplot as plt
-from dataset import sequence #sequence.py
-from common.optimizer import Adam #optimizer.pyの101行目
-from common.trainer import Trainer #trainer.py
+from dataset import sequence #sequence.py　id_to_char = {} char_to_id = {}の初期化
+from common.optimizer import Adam #optimizer.pyの101行目 
+from common.trainer import Trainer #trainer.py　多分ここ
 from common.util import eval_seq2seq #util.pyの227行目 問題をモデルに与えて文字列生成を行わせ、それが答えと会っているかどうかを判定する
 from seq2seq import Seq2seq #同ファイル
 from peeky_seq2seq import PeekySeq2seq #同ファイル
@@ -13,7 +13,8 @@ from peeky_seq2seq import PeekySeq2seq #同ファイル
 
 # データセットの読み込み
 (x_train, t_train), (x_test, t_test) = sequence.load_data('addition.txt')#adition.txtが学習データ
-char_to_id, id_to_char = sequence.get_vocab()
+char_to_id, id_to_char = sequence.get_vocab() #id_to_char = {} char_to_id = {}をしている
+
 
 # Reverse input?(reverse(データ入力の反転)を実行するか)=====================================
 is_reverse = False  # True
@@ -22,9 +23,9 @@ if is_reverse: # trueであったら実行されreverseを行う
 # ================================================================
 
 # ハイパーパラメータ(推論や予測の枠組みの中で決定されないパラメータのこと)の設定
-vocab_size = len(char_to_id)
-wordvec_size = 16
-hidden_size = 128
+vocab_size = len(char_to_id) #語彙数
+wordvec_size = 16 #文字ベクトルの次元数
+hidden_size = 128 #LSTMレイヤの隠れ状態ベクトルの次元数
 batch_size = 128 #p49　ミニバッチのサイズ
 max_epoch = 25 #p49 学習を行うエポック数
 max_grad = 5.0 #p49　勾配の最大ノルム

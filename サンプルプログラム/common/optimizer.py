@@ -102,6 +102,7 @@ class Adam:
     '''
     Adam (http://arxiv.org/abs/1412.6980v8)
     '''
+    #lr = lerning rate(学習係数) bata1 = 一次モーメント用の係数　bata2 = 二次モーメント用の係数(この２つはadamで進められている)(ゼロからdeeplearning1,p175に記載)
     def __init__(self, lr=0.001, beta1=0.9, beta2=0.999):
         self.lr = lr
         self.beta1 = beta1
