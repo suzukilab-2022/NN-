@@ -294,17 +294,23 @@ class TimeAffine:
 
 
 class TimeSoftmaxWithLoss:
+    #参考文献 https://www.anarchive-beta.com/entry/2020/12/28/120000
+    #初期化メソッドの定義
     def __init__(self):
-        self.params, self.grads = [], []
+        self.params, self.grads = [], [] #勾配とパラメータ
         self.cache = None
         self.ignore_label = -1
 
+    #順伝播メソッドの定義
     def forward(self, xs, ts):
+        #形状に関する値を取得
         N, T, V = xs.shape
 
+        #2次元配列(単語ID)に変更
         if ts.ndim == 3:  # 教師ラベルがone-hotベクトルの場合
             ts = ts.argmax(axis=2)
 
+        #'-1'の要素のインデックスを取得
         mask = (ts != self.ignore_label)
 
         # バッチ分と時系列分をまとめる（reshape）
@@ -318,18 +324,23 @@ class TimeSoftmaxWithLoss:
         loss = -np.sum(ls)
         loss /= mask.sum()
 
+        #純伝搬の処理用に変数を保持
         self.cache = (ts, ys, mask, (N, T, V))
         return loss
 
+    #逆伝播メソッドの定義
     def backward(self, dout=1):
+        #変数を取得
         ts, ys, mask, (N, T, V) = self.cache
 
+        #勾配を計算
         dx = ys
         dx[np.arange(N * T), ts] -= 1
         dx *= dout
         dx /= mask.sum()
         dx *= mask[:, np.newaxis]  # ignore_labelに該当するデータは勾配を0にする
-
+        
+        #元の形状に再変換
         dx = dx.reshape((N, T, V))
 
         return dx
