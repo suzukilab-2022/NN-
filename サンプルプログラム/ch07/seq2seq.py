@@ -18,8 +18,8 @@ class Encoder:
         self.embed = TimeEmbedding(embed_W)
         self.lstm = TimeLSTM(lstm_Wx, lstm_Wh, lstm_b, stateful=False)
 
-        self.params = self.embed.params + self.lstm.params
-        self.grads = self.embed.grads + self.lstm.grads
+        self.params = self.embed.params + self.lstm.params #メンバ変数 params(重みパラメータ)
+        self.grads = self.embed.grads + self.lstm.grads #メンバ変数 grads(勾配)
         self.hs = None
 
     def forward(self, xs):
@@ -102,13 +102,15 @@ class Seq2seq(BaseModel):
 
     def forward(self, xs, ts):
         decoder_xs, decoder_ts = ts[:, :-1], ts[:, 1:]
-
+        
+        #ここを増やす（多層化する）
         h = self.encoder.forward(xs)
         score = self.decoder.forward(decoder_xs, h)
         loss = self.softmax.forward(score, decoder_ts)
         return loss
 
     def backward(self, dout=1):
+        #ここを増やす（多層化する）
         dout = self.softmax.backward(dout)
         dh = self.decoder.backward(dout)
         dout = self.encoder.backward(dh)
