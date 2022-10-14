@@ -164,7 +164,7 @@ class LSTM:
 
         return dx, dh_prev, dc_prev
 
-
+#ここを変更できるように理解する
 class TimeLSTM:
     def __init__(self, Wx, Wh, b, stateful=False):
         self.params = [Wx, Wh, b]
@@ -307,7 +307,7 @@ class TimeSoftmaxWithLoss:
         N, T, V = xs.shape
 
         #2次元配列(単語ID)に変更
-        if ts.ndim == 3:  # 教師ラベルがone-hotベクトルの場合
+        if ts.ndim == 3:  # 教師ラベルがone-hotベクトル(一つの要素が1で、それ以外は0となるベクトル)の場合
             ts = ts.argmax(axis=2)
 
         #'-1'の要素のインデックスを取得
