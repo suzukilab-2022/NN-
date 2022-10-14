@@ -24,6 +24,7 @@ class Encoder:
 
     def forward(self, xs):
         xs = self.embed.forward(xs)
+        #このlstmを多層化したい https://qiita.com/DeepTama/items/20b93ff8b8547428f662
         hs = self.lstm.forward(xs)
         self.hs = hs
         return hs[:, -1, :]
@@ -32,6 +33,7 @@ class Encoder:
         dhs = np.zeros_like(self.hs)
         dhs[:, -1, :] = dh
 
+        #このlstmを多層化したい https://qiita.com/DeepTama/items/20b93ff8b8547428f662
         dout = self.lstm.backward(dhs)
         dout = self.embed.backward(dout)
         return dout
@@ -62,12 +64,14 @@ class Decoder:
         self.lstm.set_state(h)
 
         out = self.embed.forward(xs)
+        #このlstmを多層化したい https://qiita.com/DeepTama/items/20b93ff8b8547428f662
         out = self.lstm.forward(out)
         score = self.affine.forward(out)
         return score
 
     def backward(self, dscore):
         dout = self.affine.backward(dscore)
+        #このlstmを多層化したい https://qiita.com/DeepTama/items/20b93ff8b8547428f662
         dout = self.lstm.backward(dout)
         dout = self.embed.backward(dout)
         dh = self.lstm.dh
