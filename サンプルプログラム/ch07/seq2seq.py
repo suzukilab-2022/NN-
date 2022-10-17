@@ -6,7 +6,7 @@ from common.base_model import BaseModel
 
 
 class Encoder:
-    def __init__(self, vocab_size, wordvec_size, hidden_size):
+    def __init__(self, vocab_size, wordvec_size, hidden_size):#重みの初期化
         V, D, H = vocab_size, wordvec_size, hidden_size
         rn = np.random.randn
 
@@ -101,8 +101,8 @@ class Seq2seq(BaseModel):
         self.decoder = Decoder(V, D, H)
         self.softmax = TimeSoftmaxWithLoss()
 
-        self.params = self.encoder.params + self.decoder.params
-        self.grads = self.encoder.grads + self.decoder.grads
+        self.params = self.encoder.params + self.decoder.params #メンバ変数 params(重みパラメータ)
+        self.grads = self.encoder.grads + self.decoder.grads #メンバ変数 grads(勾配)
 
     def forward(self, xs, ts):
         decoder_xs, decoder_ts = ts[:, :-1], ts[:, 1:]

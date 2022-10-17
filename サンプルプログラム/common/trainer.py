@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 from common.np import *  # import numpy as np
 from common.util import clip_grads
 
-
+#train_seq2seqで使用している 学習コード?(ゼロ2のp216)
 class Trainer:
     def __init__(self, model, optimizer):
         self.model = model
