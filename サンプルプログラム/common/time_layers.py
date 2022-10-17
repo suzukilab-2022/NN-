@@ -164,10 +164,18 @@ class LSTM:
 
         return dx, dh_prev, dc_prev
 
-#ここを変更できるように理解する
+#seq2seqで使用している
 class TimeLSTM:
-    def __init__(self, Wx, Wh, b, stateful=False):
-        self.params = [Wx, Wh, b]
+    def __init__(self, Wx, Wh, b, stateful=False): #LSTMクラスの初期化
+        '''
+
+        Parameters
+        ----------
+        Wx: 入力`x`用の重みパラーメタ（4つ分の重みをまとめる）
+        Wh: 隠れ状態`h`用の重みパラメータ（4つ分の重みをまとめる）
+        b: バイアス（4つ分のバイアスをまとめる）
+        '''
+        self.params = [Wx, Wh, b] 
         self.grads = [np.zeros_like(Wx), np.zeros_like(Wh), np.zeros_like(b)]
         self.layers = None
 
@@ -224,7 +232,7 @@ class TimeLSTM:
     def reset_state(self):
         self.h, self.c = None, None
 
-
+#seq2seqで使用している
 class TimeEmbedding:
     def __init__(self, W):
         self.params = [W]
@@ -258,7 +266,7 @@ class TimeEmbedding:
         self.grads[0][...] = grad
         return None
 
-
+#seq2seqで使用している
 class TimeAffine:
     def __init__(self, W, b):
         self.params = [W, b]
@@ -292,7 +300,7 @@ class TimeAffine:
 
         return dx
 
-
+#seq2seqで使用している
 class TimeSoftmaxWithLoss:
     #参考文献 https://www.anarchive-beta.com/entry/2020/12/28/120000
     #初期化メソッドの定義
