@@ -14,18 +14,31 @@ class Encoder:
         lstm_Wx = (rn(D, 4 * H) / np.sqrt(D)).astype('f')
         lstm_Wh = (rn(H, 4 * H) / np.sqrt(H)).astype('f')
         lstm_b = np.zeros(4 * H).astype('f')
+        #追加
+        lstm_Wx2 = (rn(D, 4 * H) / np.sqrt(D)).astype('f')
+        lstm_Wh2 = (rn(H, 4 * H) / np.sqrt(H)).astype('f')
+        lstm_b2 = np.zeros(4 * H).astype('f')
 
         self.embed = TimeEmbedding(embed_W)
         self.lstm = TimeLSTM(lstm_Wx, lstm_Wh, lstm_b, stateful=False)
+        #追加
+        self.lstm2 = TimeLSTM(lstm_Wx2, lstm_Wh2, lstm_b2, stateful=False)
 
         self.params = self.embed.params + self.lstm.params #メンバ変数 params(重みパラメータ)
         self.grads = self.embed.grads + self.lstm.grads #メンバ変数 grads(勾配)
+        #追加
+        self.params = self.embed.params + self.lstm2.params #メンバ変数 params(重みパラメータ)
+        self.grads = self.embed.grads + self.lstm2.grads #メンバ変数 grads(勾配)
+
         self.hs = None
 
     def forward(self, xs):
         xs = self.embed.forward(xs)
-        #このlstmを多層化したい https://qiita.com/DeepTama/items/20b93ff8b8547428f662
+        
         hs = self.lstm.forward(xs)
+        #追加
+        hs = self.lstm2.forward(xs)
+
         self.hs = hs
         return hs[:, -1, :]
 
@@ -33,8 +46,11 @@ class Encoder:
         dhs = np.zeros_like(self.hs)
         dhs[:, -1, :] = dh
 
-        #このlstmを多層化したい https://qiita.com/DeepTama/items/20b93ff8b8547428f662
+        
         dout = self.lstm.backward(dhs)
+        #追加
+        dout = self.lstm2.backward(dhs)
+
         dout = self.embed.backward(dout)
         return dout
 
@@ -51,12 +67,20 @@ class Decoder:
         affine_W = (rn(H, V) / np.sqrt(H)).astype('f')
         affine_b = np.zeros(V).astype('f')
 
+        #追加
+        lstm_Wx2 = (rn(D, 4 * H) / np.sqrt(D)).astype('f')
+        lstm_Wh2 = (rn(H, 4 * H) / np.sqrt(H)).astype('f')
+        lstm_b2 = np.zeros(4 * H).astype('f')
+
         self.embed = TimeEmbedding(embed_W)
         self.lstm = TimeLSTM(lstm_Wx, lstm_Wh, lstm_b, stateful=True)
+        #追加
+        self.lstm2 = TimeLSTM(lstm_Wx2, lstm_Wh2, lstm_b2, stateful=False)
+
         self.affine = TimeAffine(affine_W, affine_b)
 
         self.params, self.grads = [], []
-        for layer in (self.embed, self.lstm, self.affine):
+        for layer in (self.embed, self.lstm, self.lstm2, self.affine): #self.lstm2を追加
             self.params += layer.params
             self.grads += layer.grads
 
@@ -64,15 +88,20 @@ class Decoder:
         self.lstm.set_state(h)
 
         out = self.embed.forward(xs)
-        #このlstmを多層化したい https://qiita.com/DeepTama/items/20b93ff8b8547428f662
         out = self.lstm.forward(out)
+        #追加
+        out = self.lstm2.forward(out)
+
         score = self.affine.forward(out)
         return score
 
     def backward(self, dscore):
         dout = self.affine.backward(dscore)
-        #このlstmを多層化したい https://qiita.com/DeepTama/items/20b93ff8b8547428f662
+       
         dout = self.lstm.backward(dout)
+        #追加
+        dout = self.lstm2.backward(dout)
+        
         dout = self.embed.backward(dout)
         dh = self.lstm.dh
         return dh
@@ -107,14 +136,14 @@ class Seq2seq(BaseModel):
     def forward(self, xs, ts):
         decoder_xs, decoder_ts = ts[:, :-1], ts[:, 1:]
         
-        #ここを増やす（多層化する）
+
         h = self.encoder.forward(xs)
         score = self.decoder.forward(decoder_xs, h)
         loss = self.softmax.forward(score, decoder_ts)
         return loss
 
     def backward(self, dout=1):
-        #ここを増やす（多層化する）
+
         dout = self.softmax.backward(dout)
         dh = self.decoder.backward(dout)
         dout = self.encoder.backward(dh)

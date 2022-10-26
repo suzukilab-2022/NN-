@@ -17,7 +17,7 @@ class BaseModel:
     def backward(self, *args):
         raise NotImplementedError
 
-    def save_params(self, file_name=None):
+    def save_params(self, file_name=None):#パラメータの書き込み
         if file_name is None:
             file_name = self.__class__.__name__ + '.pkl'
 
@@ -28,7 +28,7 @@ class BaseModel:
         with open(file_name, 'wb') as f:
             pickle.dump(params, f)
 
-    def load_params(self, file_name=None):
+    def load_params(self, file_name=None):#パラメータの読み込み
         if file_name is None:
             file_name = self.__class__.__name__ + '.pkl'
 

@@ -33,7 +33,7 @@ class Rnnlm(BaseModel):
             self.params += layer.params
             self.grads += layer.grads
 
-    def predict(self, xs):
+    def predict(self, xs):#softmaxレイヤの直前までを処理する
         for layer in self.layers:
             xs = layer.forward(xs)
         return xs
@@ -49,5 +49,5 @@ class Rnnlm(BaseModel):
             dout = layer.backward(dout)
         return dout
 
-    def reset_state(self):
+    def reset_state(self):#ネットワークの状態をリセットするメソッド p214
         self.lstm_layer.reset_state()
