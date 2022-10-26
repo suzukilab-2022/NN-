@@ -47,7 +47,7 @@ class BetterRnnlm(BaseModel):
             self.params += layer.params
             self.grads += layer.grads
 
-    def predict(self, xs, train_flg=False):
+    def predict(self, xs, train_flg=False):#softmaxレイヤの直前までを処理するp255 p268の図6-36をみたら理解できる
         for layer in self.drop_layers:
             layer.train_flg = train_flg
 
@@ -66,6 +66,6 @@ class BetterRnnlm(BaseModel):
             dout = layer.backward(dout)
         return dout
 
-    def reset_state(self):
+    def reset_state(self):#ネットワークの状態をリセットするメソッド p214
         for layer in self.lstm_layers:
             layer.reset_state()
