@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 from dataset import sequence #sequence.py　id_to_char = {} char_to_id = {}の初期化
 from common.optimizer import Adam #optimizer.pyの101行目 adamという最適化アルゴリズムの一種
 from common.trainer import Trainer #trainer.py　
-from common.util import eval_seq2seq #util.pyの227行目 問題をモデルに与えて文字列生成を行わせ、それが答えと会っているかどうかを判定する
+from common.util import eval_seq2seq #util.pyの227行目 正解率を計測
 from seq2seq import Seq2seq #同ファイル seq2seqの処理(encoder,decoderなど)
 from peeky_seq2seq import PeekySeq2seq #同ファイル peeky(覗き見)の処理
 
